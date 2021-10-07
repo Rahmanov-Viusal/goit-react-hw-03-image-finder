@@ -50,6 +50,8 @@ class App extends Component {
   firstFetchImages = (query, page) => {
     pixabayAPI.fetchImage(query, page).then(({ hits, total }) => {
       this.setState({ images: hits, total, status: "resolved" });
+      console.log(total);
+      console.log(hits);
       if (!total) {
         this.setState({
           error: "Something went wrong! Please, change your request!",
@@ -80,22 +82,16 @@ class App extends Component {
     this.setState({ page: this.state.page + 1 });
   };
 
-  openModal = url => {
+  toggleModal = url => {
     this.setState(({ showModal }) => ({
       showModal: !showModal,
       largeURL: url,
     }));
   };
 
-  closeModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-      largeURL: "",
-    }));
-  };
-
   render() {
-    const { error, status, total, page, showModal, largeURL } = this.state;
+    const { error, status, total, page, showModal, largeURL, images } =
+      this.state;
 
     return (
       <>
@@ -105,10 +101,7 @@ class App extends Component {
             {status === "idle" && <Request />}
             {status === "rejected" && <ErrorMessage message={error} />}
             {status === "resolved" && (
-              <ImageGallery
-                images={this.state.images}
-                openModal={this.openModal}
-              />
+              <ImageGallery images={images} openModal={this.toggleModal} />
             )}
             {status === "pending" && (
               <Loader type="Watch" color="#00BFFF" height={80} width={80} />
@@ -117,7 +110,7 @@ class App extends Component {
           </Container>
         </Section>
         {showModal && (
-          <Modal onClose={this.closeModal}>
+          <Modal onClose={this.toggleModal}>
             <img src={largeURL} alt="" />
           </Modal>
         )}
