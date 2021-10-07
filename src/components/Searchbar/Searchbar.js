@@ -1,43 +1,52 @@
-import React, { Component } from "react";
+import { Component } from "react";
 import s from "./Searchbar.module.css";
+import { toast } from "react-toastify";
+import Container from "../Container";
 
-export class Searchbar extends Component {
+class SearchBar extends Component {
   state = {
-    search: "",
+    query: "",
   };
-  onSubmit = e => {
+
+  handleSubmitForm = e => {
     e.preventDefault();
-    this.props.onSubmit(this.state.search);
+
+    if (!this.state.query) {
+      toast.error("Please, enter your request!");
+      return;
+    }
+
+    this.props.onSubmit(this.state.query);
+    this.setState({ query: "" });
   };
-  handleChange = e => {
-    const { name, value } = e.target;
-    this.setState({ [name]: value.toLowerCase() });
+
+  handleChangeQuery = e => {
+    this.setState({ query: e.currentTarget.value.toLowerCase().trim() });
   };
+
   render() {
-    const { search } = this.state;
     return (
-      <div>
-        <header className={s.Searchbar}>
-          <form onSubmit={this.onSubmit} className={s.SearchForm}>
-            <button type="submit" className={s.SearchFormButton}>
-              <span className={s.SearchFormButtonLabel}>Search</span>
+      <header className={s.Searchbar}>
+        <Container>
+          <form onSubmit={this.handleSubmitForm} className={s.Form}>
+            <button type="submit" className={s.Button}>
+              <span className={s.Label}>Search</span>
             </button>
 
             <input
-              className={s.SearchFormInput}
+              className={s.Input}
               type="text"
-              // autocomplete="off"
-              // autofocus
+              autoComplete="off"
+              autoFocus
               placeholder="Search images and photos"
-              value={search}
-              onChange={this.handleChange}
-              name="search"
+              onChange={this.handleChangeQuery}
+              value={this.state.query}
             />
           </form>
-        </header>
-      </div>
+        </Container>
+      </header>
     );
   }
 }
 
-export default Searchbar;
+export default SearchBar;

@@ -1,23 +1,32 @@
-import React, { Component } from "react";
+import PropTypes from "prop-types";
 import s from "./ImageGalleryItem.module.css";
 
-export class ImageGalleryItem extends Component {
-  handleClickImage = e => {
-    this.props.openModal(e.target.dataset.modal);
-  };
-  render() {
-    const { image, imageInModal, description } = this.props;
-    return (
-      <li className={s.ImageGalleryItem} onClick={this.handleClickImage}>
-        <img
-          src={image}
-          alt={description}
-          data-modal={imageInModal}
-          className="ImageGalleryItem-image"
-        />
-      </li>
-    );
-  }
-}
+const ImageGalleryItem = ({
+  webformatURL,
+  largeImageURL,
+  tags = "image",
+  openModal,
+}) => {
+  return (
+    <li className={s.Item}>
+      <img
+        onClick={e => {
+          openModal(e.target.dataset.large);
+        }}
+        src={webformatURL}
+        alt={tags}
+        className={s.Image}
+        data-large={largeImageURL}
+      />
+    </li>
+  );
+};
+
+ImageGalleryItem.propTypes = {
+  webformatURL: PropTypes.string.isRequired,
+  largeImageURL: PropTypes.string.isRequired,
+  tags: PropTypes.string.isRequired,
+  openModal: PropTypes.func.isRequired,
+};
 
 export default ImageGalleryItem;

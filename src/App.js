@@ -1,18 +1,18 @@
-import React, { Component } from "react";
-import Loader from "react-loader-spinner";
+import { Component } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
-import ImageGallery from "./components/ImageGallery/ImageGallery";
-import Modal from "./components/Modal";
+import "./App.css";
+import Loader from "react-loader-spinner";
+import ImageGallery from "./components/ImageGallery";
 import Searchbar from "./components/Searchbar";
 import pixabayAPI from "./services/services";
-import s from "./App.module.css";
-import Button from "./components/Button";
 import Section from "./components/Section";
 import Container from "./components/Container";
-import Request from "./components/Request";
 import ErrorMessage from "./components/ErrorMessage";
+import Request from "./components/Request";
+import Button from "./components/Button";
+import Modal from "./components/Modal";
 
 class App extends Component {
   state = {
@@ -63,31 +63,43 @@ class App extends Component {
 
   nextFetchImages = (query, page) => {
     pixabayAPI.fetchImage(query, page).then(({ hits }) => {
-      this.setState(({ images }) => ({
-        images: [...images, ...hits],
+      this.setState(prevState => ({
+        images: [...prevState.images, ...hits],
       }));
     });
   };
-  handleSubmitForm = query => {
-    this.setState({ query, page: 1 });
+
+  handleFormSubmit = query => {
+    this.setState({
+      query,
+      page: 1,
+    });
   };
 
   handleIncrement = () => {
     this.setState({ page: this.state.page + 1 });
   };
 
-  toggleModal = url => {
+  openModal = url => {
     this.setState(({ showModal }) => ({
       showModal: !showModal,
       largeURL: url,
     }));
   };
 
+  closeModal = () => {
+    this.setState(({ showModal }) => ({
+      showModal: !showModal,
+      largeURL: "",
+    }));
+  };
+
   render() {
     const { error, status, total, page, showModal, largeURL } = this.state;
+
     return (
-      <div className={s.App}>
-        <Searchbar onSubmit={this.handleSubmitForm} />;
+      <>
+        <Searchbar onSubmit={this.handleFormSubmit} />;
         <Section>
           <Container>
             {status === "idle" && <Request />}
@@ -95,7 +107,7 @@ class App extends Component {
             {status === "resolved" && (
               <ImageGallery
                 images={this.state.images}
-                openModal={this.toggleModal}
+                openModal={this.openModal}
               />
             )}
             {status === "pending" && (
@@ -105,12 +117,12 @@ class App extends Component {
           </Container>
         </Section>
         {showModal && (
-          <Modal onToggleModal={this.toggleModal}>
+          <Modal onClose={this.closeModal}>
             <img src={largeURL} alt="" />
           </Modal>
         )}
         <ToastContainer autoClose={3000} />
-      </div>
+      </>
     );
   }
 }

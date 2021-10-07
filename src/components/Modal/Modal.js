@@ -14,19 +14,19 @@ class Modal extends Component {
 
   onKeyDown = e => {
     if (e.code === "Escape") {
-      this.props.onToggleModal();
+      this.props.onClose();
     }
   };
 
   onBackdropClick = e => {
     if (e.target === e.currentTarget) {
-      this.props.onToggleModal();
+      this.props.onClose();
     }
   };
 
   render() {
     return createPortal(
-      <div className={s.Overlay} onClick={this.props.onToggleModal}>
+      <div className={s.Overlay} onClick={this.onBackdropClick}>
         <div className={s.Modal}>{this.props.children}</div>
       </div>,
       modalRoot
